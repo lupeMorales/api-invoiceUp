@@ -12,11 +12,9 @@ use App\Http\Controllers\InvoicesController;
 }); */
 
 Route::post('/invoices', [InvoicesController::class, 'store']);
+Route::post('register', [AuthController::class, 'register']);
 
-Route::prefix("v1")->group(function () {
 
-    Route::post('register', [AuthController::class, 'register']);
-});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
