@@ -5,11 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoicesController;
 
-Route::prefix("v1")->group(function () {
+/* Route::prefix("v1")->group(function () {
     Route::resource('invoices', InvoicesController::class);
     Route::post('invoices/{id}', [InvoicesController::class, 'update']);
     Route::delete('invoices/{id}', [InvoicesController::class . 'destroy']);
-});
+}); */
+
+Route::post('/invoices', [InvoicesController::class, 'store']);
 
 Route::prefix("v1")->group(function () {
 

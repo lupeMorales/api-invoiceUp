@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id(); // autoincremental por defecto
-            $table->timestamps(); // fecha de cración fecha de actualización
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->id();
             $table->string('template');
-            /*    $table->string('logo')->nullable(); */
+            $table->string('logo')->nullable();
+            $table->string('number_invoice');
             $table->string('company_name');
             $table->string('company_address');
             $table->string('company_phone');
@@ -27,21 +26,17 @@ return new class extends Migration
             $table->string('client_phone');
             $table->string('client_mail');
             $table->string('client_cif');
-
-            $table->float('iva');
-            $table->float('iva_amount');
-            $table->float('irpf');
-            $table->float('irpf_amount');
-            $table->string('issue_date');
-            $table->string('expiration_date');
+            $table->decimal('iva', 5, 2);
+            $table->decimal('iva_amount', 8, 2)->nullable();
+            $table->decimal('irpf', 5, 2);
+            $table->decimal('irpf_amount', 8, 2)->nullable();
+            $table->timestamp('issue_date');
+            $table->timestamp('expiration_date');
             $table->string('service');
             $table->integer('quantity');
-            $table->float('price');
-            $table->float('total_invoice');
+            $table->decimal('price', 8, 2);
 
-            $table->timestamp('')
-
-            $table->string("number_invoice");
+            $table->timestamps();
         });
     }
 
