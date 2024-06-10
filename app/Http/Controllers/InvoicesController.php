@@ -24,7 +24,7 @@ class InvoicesController extends Controller
     {
         $validated = $request->validate([
             'template' => 'required|string|max:255',
-            'logo' => 'nullable|string|max:255',
+            'logo' => 'nullable|file',
             'number_invoice' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
@@ -50,6 +50,13 @@ class InvoicesController extends Controller
                 return response()->json($validator->errors());
             } */
 
+        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            $path = $request->logo->store('logos', 'public');
+            //Guarda el archivo en 'storage/app/public/logos
+            info('path');
+            info($path);
+            $validated['logo'] = $path; // Guarda la ruta en el array válido
+        }
         $invoices = Invoices::create($validated);
 
         $invoices->save();
