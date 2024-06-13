@@ -6,12 +6,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Invoices;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class InvoicesController extends Controller
 {
 
-    public function index()
+    public function index() /* devuelve todas las facturas */
     {
         $invoices = Invoices::all();
         return response()->json($invoices);
@@ -22,10 +23,11 @@ class InvoicesController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Invoice store request received', ['data' => $request->all()]);
         $validated = $request->validate([
             'template' => 'required|string|max:255',
-            'logo' => 'nullable|file',
-            'number_invoice' => 'required|string|max:255',
+            /*        'logo' => 'nullable|file', */
+            'number_invoice' => 'nullable|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
             'company_phone' => 'required|string|max:20',
@@ -53,13 +55,16 @@ class InvoicesController extends Controller
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
             $path = $request->logo->store('logos', 'public');
             //Guarda el archivo en 'storage/app/public/logos
-            info('path');
-            info($path);
+            /*  info('path');
+            info($path); */
+            Log::info('Logo uploaded successfully', ['path' => $path]);
             $validated['logo'] = $path; // Guarda la ruta en el array válido
         }
         $invoices = Invoices::create($validated);
+        Log::info('Invoice created successfully', ['invoice' => $invoices]);
 
         $invoices->save();
+
         return response()->json([
             "message" => "registro agregado correctamente",
             'invoice' => $invoices
