@@ -28,6 +28,7 @@ class InvoicesController extends Controller
         Log::info('Invoice store request received', ['data' => $request->all()]);
         $validated = $request->validate([
 
+
             'template' => 'required|string|max:255',
             'logo' => 'nullable|file',
             'number_invoice' => 'required|string|max:255',
@@ -64,6 +65,10 @@ class InvoicesController extends Controller
             Log::info('Logo uploaded successfully', ['path' => $path]);
             $validated['logo'] = $path; // Guarda la ruta en el array válido
         }
+
+        // Añadir el campo 'paid' con valor predeterminado false
+        $validated['paid'] = false;
+
         $invoices = Invoices::create($validated);
         Log::info('Invoice created successfully', ['invoice' => $invoices]);
 
@@ -110,6 +115,38 @@ class InvoicesController extends Controller
             "message" => "registro modificado correctamente"
         ]);
     }
+
+
+    // Update el stado de la factura
+
+    public function updateStatus(Request $request, $number_invoice)
+    {
+        // Validar la solicitud
+        $request->validate([
+            'paid' => 'required|boolean',
+        ]);
+
+        try {
+            // Buscar la factura por su ID
+            $invoice = Invoices::findOrFail($number_invoice);
+
+            // Actualizar el estado 'paid' de la factura
+            $invoice->paid = $request->paid;
+            $invoice->save();
+
+            return response()->json([
+                'message' => 'Estado de la factura actualizado correctamente',
+                'invoice' => $invoice,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el estado de la factura',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     /**
      * Remove the specified resource from storage.

@@ -15,6 +15,8 @@ Route::get('/invoices', [InvoicesController::class, 'index']);
 
 Route::delete('invoices/{number_invoice}', [InvoicesController::class, 'destroy']);
 
+Route::patch('/api/invoices/{number_invoice}', [InvoicesController::class, 'updateStatus']);
+
 Route::post('/invoices', [InvoicesController::class, 'store']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
