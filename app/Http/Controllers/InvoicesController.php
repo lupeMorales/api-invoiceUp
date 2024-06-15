@@ -15,6 +15,8 @@ class InvoicesController extends Controller
     public function index() /* devuelve todas las facturas */
     {
         $invoices = Invoices::all();
+
+        // devuelve un JSON
         return response()->json($invoices);
     }
 
@@ -25,9 +27,10 @@ class InvoicesController extends Controller
     {
         Log::info('Invoice store request received', ['data' => $request->all()]);
         $validated = $request->validate([
+
             'template' => 'required|string|max:255',
-            /*        'logo' => 'nullable|file', */
-            'number_invoice' => 'nullable|string|max:255',
+            'logo' => 'nullable|file',
+            'number_invoice' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
             'company_phone' => 'required|string|max:20',
@@ -48,9 +51,10 @@ class InvoicesController extends Controller
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
         ]);
-        /*  if ($validator->fails()) {
-                return response()->json($validator->errors());
-            } */
+        /*         info("he validado");
+        if ($validated->fails()) {
+            return response()->json($validated->errors());
+        } */
 
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
             $path = $request->logo->store('logos', 'public');
@@ -110,13 +114,30 @@ class InvoicesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($number_invoice)
     {
-        $invoices = Invoices::find($id);
-        $invoices->delete();
+        try {
+            // Buscar la factura por el número de factura
+            $invoice = Invoices::where('number_invoice', $number_invoice)->first();
 
-        return response()->json([
-            "message" => "registro eliminado correctamente"
-        ]);
+            if (!$invoice) {
+                return response()->json([
+                    "message" => "Factura no encontrada"
+                ], 404);
+            }
+
+            $invoice->delete();
+
+            return response()->json([
+                "message" => "Registro eliminado correctamente"
+            ]);
+        } catch (\Exception $e) {
+            // Capturar y registrar cualquier excepción ocurrida
+            Log::error('Error al eliminar la factura: ' . $e->getMessage());
+
+            return response()->json([
+                "message" => "Error al eliminar la factura"
+            ], 500);
+        }
     }
 }

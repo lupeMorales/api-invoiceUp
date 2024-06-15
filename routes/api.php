@@ -11,6 +11,10 @@ use App\Http\Controllers\InvoicesController;
     Route::delete('invoices/{id}', [InvoicesController::class . 'destroy']);
 }); */
 
+Route::get('/invoices', [InvoicesController::class, 'index']);
+
+Route::delete('invoices/{number_invoice}', [InvoicesController::class, 'destroy']);
+
 Route::post('/invoices', [InvoicesController::class, 'store']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
