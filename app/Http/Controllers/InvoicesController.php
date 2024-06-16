@@ -20,6 +20,7 @@ class InvoicesController extends Controller
         return response()->json($invoices);
     }
 
+
     /**
      * almacena y crea un registro nuevo en nuestra BD
      */
@@ -97,6 +98,8 @@ class InvoicesController extends Controller
         echo $invoices->foto;
         exit;
     }
+
+
 
     /**
      * Update the specified resource in storage.

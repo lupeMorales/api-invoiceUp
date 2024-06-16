@@ -12,6 +12,7 @@ use App\Http\Controllers\InvoicesController;
 }); */
 
 Route::get('/invoices', [InvoicesController::class, 'index']);
+Route::get('/invoices-by-user', [InvoicesController::class, 'indexByUser']);
 
 Route::delete('invoices/{number_invoice}', [InvoicesController::class, 'destroy']);
 
