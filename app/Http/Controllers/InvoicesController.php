@@ -101,14 +101,15 @@ class InvoicesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $number_invoice)
     {
 
-        $invoices = Invoices::find($id);
+        $invoices = Invoices::find($number_invoice);
         $invoices->company_name = $request->company_name;
         $invoices->company_adress = $request->company_adress;
         $invoices->company_phone = $request->company_phone;
         $invoices->company_mail = $request->company_mail;
+        $invoices->paid = $request->paid;
         $invoices->save();
 
         return response()->json([
@@ -116,35 +117,16 @@ class InvoicesController extends Controller
         ]);
     }
 
+    public function markAsPaid($numberInvoice)
+    {
+        $invoice = Invoices::where('number_invoice', $numberInvoice)->firstOrFail();
+        $invoice->update(['paid' => true]);
+        return response()->json(['message' => 'Factura marcada como cobrada']);
+    }
 
     // Update el stado de la factura
 
-    public function updateStatus(Request $request, $number_invoice)
-    {
-        // Validar la solicitud
-        $request->validate([
-            'paid' => 'required|boolean',
-        ]);
 
-        try {
-            // Buscar la factura por su ID
-            $invoice = Invoices::findOrFail($number_invoice);
-
-            // Actualizar el estado 'paid' de la factura
-            $invoice->paid = $request->paid;
-            $invoice->save();
-
-            return response()->json([
-                'message' => 'Estado de la factura actualizado correctamente',
-                'invoice' => $invoice,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al actualizar el estado de la factura',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
 
 
 
