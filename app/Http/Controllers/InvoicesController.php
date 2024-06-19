@@ -12,24 +12,34 @@ use Illuminate\Support\Facades\Log;
 class InvoicesController extends Controller
 {
 
-    public function index() /* devuelve todas las facturas */
+    public function index(Request $request) /* devuelve todas las facturas */
     {
-        $invoices = Invoices::all();
+        $user = $request->user();
+        $invoices = Invoices::where("user_ID", $user->id)->get();
 
         // devuelve un JSON
         return response()->json($invoices);
     }
 
-
+    public function indexByUser(Request $request)
+    {
+        $user = $request->user();
+        return response()->json($user->invoices);
+    }
     /**
      * almacena y crea un registro nuevo en nuestra BD
      */
     public function store(Request $request)
     {
-        Log::info('Invoice store request received', ['data' => $request->all()]);
+
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated user',
+            ], 401);
+        }
+
         $validated = $request->validate([
-
-
             'template' => 'required|string|max:255',
             'logo' => 'nullable|file',
             'number_invoice' => 'required|string|max:255',
@@ -69,7 +79,7 @@ class InvoicesController extends Controller
 
         // Añadir el campo 'paid' con valor predeterminado false
         $validated['paid'] = false;
-
+        $validated['user_ID'] = $user->id;
         $invoices = Invoices::create($validated);
         Log::info('Invoice created successfully', ['invoice' => $invoices]);
 
@@ -109,7 +119,7 @@ class InvoicesController extends Controller
 
         $invoices = Invoices::find($number_invoice);
         $invoices->company_name = $request->company_name;
-        $invoices->company_adress = $request->company_adress;
+        $invoices->company_address = $request->company_adress;
         $invoices->company_phone = $request->company_phone;
         $invoices->company_mail = $request->company_mail;
         $invoices->paid = $request->paid;

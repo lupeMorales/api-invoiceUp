@@ -11,6 +11,8 @@ use App\Http\Controllers\InvoicesController;
     Route::delete('invoices/{id}', [InvoicesController::class . 'destroy']);
 }); */
 
+
+
 Route::get('/invoices', [InvoicesController::class, 'index']);
 Route::get('/invoices-by-user', [InvoicesController::class, 'indexByUser']);
 
@@ -18,11 +20,11 @@ Route::delete('invoices/{number_invoice}', [InvoicesController::class, 'destroy'
 
 Route::put('invoices/{number_invoice}/mark-as-paid', [InvoicesController::class, 'markAsPaid']);
 
-Route::post('/invoices', [InvoicesController::class, 'store']);
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
+Route::post('invoices', [InvoicesController::class, 'store'])->middleware('auth:api');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
