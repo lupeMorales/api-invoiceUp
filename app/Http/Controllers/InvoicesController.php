@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Log;
 class InvoicesController extends Controller
 {
 
-    public function index(Request $request) /* devuelve todas las facturas */
+    public function index() /* devuelve todas las facturas */
     {
-        $user = $request->user();
-        $invoices = Invoices::where("user_ID", $user->id)->get();
+        $invoices = Invoices::all();
+
 
         // devuelve un JSON
         return response()->json($invoices);
@@ -24,6 +24,7 @@ class InvoicesController extends Controller
     public function indexByUser(Request $request)
     {
         $user = $request->user();
+        $invoices = Invoices::where("user_ID", $user->id)->get();
         return response()->json($user->invoices);
     }
     /**
@@ -31,13 +32,6 @@ class InvoicesController extends Controller
      */
     public function store(Request $request)
     {
-
-        $user = $request->user();
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated user',
-            ], 401);
-        }
 
         $validated = $request->validate([
             'template' => 'required|string|max:255',
@@ -79,7 +73,7 @@ class InvoicesController extends Controller
 
         // Añadir el campo 'paid' con valor predeterminado false
         $validated['paid'] = false;
-        $validated['user_ID'] = $user->id;
+
         $invoices = Invoices::create($validated);
         Log::info('Invoice created successfully', ['invoice' => $invoices]);
 

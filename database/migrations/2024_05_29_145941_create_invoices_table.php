@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('service');
             $table->integer('quantity');
             $table->decimal('price', 8, 2);
-            $table->string('user_ID');
+
 
             $table->timestamps();
         });
